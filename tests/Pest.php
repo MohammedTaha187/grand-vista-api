@@ -16,6 +16,19 @@ uses(
     Illuminate\Foundation\Testing\RefreshDatabase::class,
 )->in('Feature', '../Modules/*/Tests/Feature');
 
+beforeEach(function () {
+    $privateKey = storage_path('oauth-private.key');
+    $publicKey = storage_path('oauth-public.key');
+
+    if (is_readable($privateKey)) {
+        config()->set('passport.private_key', file_get_contents($privateKey));
+    }
+
+    if (is_readable($publicKey)) {
+        config()->set('passport.public_key', file_get_contents($publicKey));
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | Expectations
