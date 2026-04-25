@@ -3,30 +3,43 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\Auth\UserResource;
-use App\Services\Api\V1\Auth\SocialAuthService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
 
 class SocialAuthController extends Controller
 {
-    public function __construct(protected SocialAuthService $socialAuthService) {}
-
-    public function handleSocialLogin(Request $request): JsonResponse
+    public function redirectToProvider(string $provider)
     {
-        $request->validate([
-            'social_provider' => 'required|string',
-            'social_id' => 'required|string',
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'avatar' => 'nullable|string',
-        ]);
+        return Socialite::driver($provider)->stateless()->redirect();
+    }
 
-        $result = $this->socialAuthService->handleSocialLogin($request->all());
+    public function handleProviderCallback(string $provider)
+    {
+        try {
+            $socialUser = Socialite::driver($provider)->stateless()->user();
+            
+            $user = User::where('email', $socialUser->getEmail())->first();
 
-        return response()->json([
-            'user' => new UserResource($result['user']),
-            'token' => $result['token'],
-        ]);
+            if (!$user) {
+                $user = User::create([
+                    'name' => $socialUser->getName(),
+                    'email' => $socialUser->getEmail(),
+                    'password' => bcrypt(Str::random(24)),
+                    'email_verified_at' => now(),
+                ]);
+            }
+
+            $token = $user->createToken('SocialAuth')->accessToken;
+
+            return $this->successResponse([
+                'user' => $user,
+                'token' => $token,
+            ], 'Authenticated successfully');
+
+        } catch (\Exception $e) {
+            return $this->errorResponse('Authentication failed: ' . $e->getMessage(), 401);
+        }
     }
 }

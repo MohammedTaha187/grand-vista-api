@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Repositories\User\Contracts\UserRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -32,13 +33,13 @@ class AuthService
 
         event(new UserRegistered($user));
 
-        $token = auth('api')->login($user);
+        $token = $user->createToken('Personal Access Token')->accessToken;
 
         return [
             'user' => $user,
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => 3600 * 24 * 365,
         ];
     }
 
@@ -46,32 +47,35 @@ class AuthService
     {
         $credentials = ['email' => $data['email'], 'password' => $data['password']];
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (!Auth::attempt($credentials)) {
             throw new \Exception('Invalid credentials');
         }
 
+        $user = Auth::user();
+        $token = $user->createToken('Personal Access Token')->accessToken;
+
         return [
-            'user' => auth('api')->user(),
+            'user' => $user,
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => 3600 * 24 * 365,
         ];
     }
 
     public function logout(User $user): void
     {
-        auth('api')->logout();
+        Auth::guard('api')->logout();
     }
 
     public function refresh(User $user): array
     {
-        $token = auth('api')->refresh();
+        $token = $user->createToken('Personal Access Token')->accessToken;
 
         return [
-            'user' => auth('api')->user(),
+            'user' => $user,
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => 3600 * 24 * 365,
         ];
     }
 
@@ -174,13 +178,13 @@ class AuthService
         }
 
         // 5. Generate Token
-        $token = auth('api')->login($user);
+        $token = $user->createToken('Personal Access Token')->accessToken;
 
         return [
             'user' => $user,
             'token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => 3600 * 24 * 365,
         ];
     }
 

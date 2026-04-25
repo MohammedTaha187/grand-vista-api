@@ -1,107 +1,75 @@
-# 🚀 Easy Dev SDK for Laravel
+# Grand Vista Hotel Management API 🏨
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/muhammad/easy-dev.svg?style=for-the-badge)](https://packagist.org/packages/muhammad/easy-dev)
-[![Total Downloads](https://img.shields.io/packagist/dt/muhammad/easy-dev.svg?style=for-the-badge)](https://packagist.org/packages/muhammad/easy-dev)
-[![License](https://img.shields.io/packagist/l/muhammad/easy-dev.svg?style=for-the-badge)](https://packagist.org/packages/muhammad/easy-dev)
-[![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
-[![Laravel Version](https://img.shields.io/badge/Laravel-11%2F12%2F13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+A robust, enterprise-grade Hotel Management API built with Laravel, featuring a modular architecture, multi-gateway payment integration, and advanced authentication.
 
-**Easy Dev SDK** is a powerful, automation-focused toolkit designed to accelerate Laravel API development by 10x. It eliminates boilerplate by generating high-quality, production-ready code structures following strict Clean Architecture principles.
+## 🚀 Features
 
----
+- **Modular Architecture**: Built using Laravel Modules for high maintainability.
+- **Advanced Auth**: Laravel Passport for OAuth2 and JWT-compatible authentication.
+- **Social Login**: Integrated Google and Facebook authentication via Socialite.
+- **Multi-Gateway Payments**: 
+  - 💳 Stripe
+  - 🅿️ PayPal
+  - 💳 Paymob (Local/International)
+  - 💳 Kashier
+- **Automated Documentation**: Interactive Swagger UI for API testing.
+- **Email Notifications**: Automated transaction and booking status updates.
+- **Multi-Tenancy Ready**: Pre-configured for multi-company support.
+- **Health Monitoring**: Built-in system health checks for DB and Redis.
 
-## 🏗️ Architecture Flow
+## 🛠 Tech Stack
 
-The SDK enforces a professional multi-layered architecture for every feature:
+- **Backend**: Laravel 11+
+- **Database**: MySQL / PostgreSQL
+- **Caching**: Redis
+- **Authentication**: Laravel Passport & Socialite
+- **API Docs**: L5-Swagger (OpenAPI 3.0)
 
-```mermaid
-graph TD
-    A[Request] --> B[Controller]
-    B --> C[DTO - Spatie Data]
-    C --> D[Service Interface]
-    D --> E[Service Implementation]
-    E --> F[Repository Interface]
-    F --> G[Repository Implementation]
-    G --> H[Model]
-    H --> I[API Resource]
-```
+## 📦 Installation
 
----
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/MohammedTaha187/grand-vista-api.git
+   cd grand-vista-api
+   ```
 
-## 🚀 Key Features
+2. **Install dependencies**:
+   ```bash
+   composer install
+   npm install
+   ```
 
-- **Standardized CRUD Generation**: Generate Model, Migration, Controller, DTO, Service, Repository, Policy, and Pest tests in one command.
-- **Modern Model Standards**: Uses Laravel 13 `#[Guarded]` attributes and PHPDoc-based factory discovery.
-- **Smart UUID Support**: Automatically detects UUID primary keys and configures `HasUuids` traits and string type-hinting.
-- **Smart Validation**: Automatically detects database column types and generates validation rules.
-- **Automated Relationship Discovery**: Scans DB constraints to write `belongsTo` and `hasMany` methods automatically.
-- **Modular Support**: Full integration with `nwidart/laravel-modules`.
+3. **Environment Setup**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
----
+4. **Database & Migration**:
+   ```bash
+   php artisan migrate --seed
+   php artisan passport:install
+   ```
 
-## ✨ Recent Updates (v2.0)
+## 📖 API Documentation
 
-- **Laravel 13 & PHP 8.4 Ready**: Full support for the latest framework features.
-- **Mass Assignment Refactor**: Replaced `$fillable` with `#[Guarded(['id', ...])]` attribute.
-- **Factory Discovery**: Removed `newFactory()` boilerplate; uses modern `@use HasFactory<ModelFactory>` pattern.
-- **Global ID Type-Hinting**: Automatic switching between `int` and `string` for Service/Repository methods based on PK.
-
----
-
-## 🛠️ Installation
-
-```bash
-composer require muhammad/easy-dev --dev
-```
-
-Publish the configuration and stubs:
-
-```bash
-php artisan vendor:publish --tag="easy-dev-config"
-php artisan vendor:publish --tag="easy-dev-stubs"
-```
-
----
-
-## 📖 Usage
-
-### 1. Generate a Professional CRUD
-Generate a complete feature set for a "Product" model (and create a migration):
-
-```bash
-php artisan smart:crud Product --module=Ecommerce
-```
-
-### 2. Generate from Existing Migration
-Build an entire feature based on an existing database table (Auto-detects columns and relationships):
-
-```bash
-php artisan smart:from-migration products
-```
-
-### 3. Sync Relationships
-Automatically detect database relationships for ALL existing models:
-
-```bash
-php artisan smart:sync-relations
-```
-
----
+Access the interactive Swagger documentation at:
+`http://your-domain.com/api/documentation`
 
 ## 🧪 Testing
 
-The SDK is built with **Pest** in mind. Every generated feature comes with a comprehensive Pest test suite ready to run:
-
+Run feature and contract tests:
 ```bash
 php artisan test
 ```
 
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
 ---
-
-## 👨‍💻 Author
-
-**Muhammad Taha**  
-*Backend Developer & Cloud Architect*
-
----
-*Built with ❤️ for the Laravel Community.*
+Developed with ❤️ by [Muhammad Taha](mailto:muhammad.taha.eng@gmail.com)

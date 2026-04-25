@@ -70,14 +70,22 @@ class SmartSyncRelationsCommand extends Command
 
         foreach ($modulePaths as $path) {
             $moduleName = basename($path);
-            $modelPath = "{$path}/Models";
-            if (File::exists($modelPath)) {
-                foreach (File::files($modelPath) as $file) {
-                    $models[] = [
-                        'name' => $file->getBasename('.php'),
-                        'path' => $file->getRealPath(),
-                        'namespace' => "Modules\\{$moduleName}\\Models",
-                    ];
+            
+            // Try both {Module}/Models and {Module}/app/Models
+            $possiblePaths = [
+                "{$path}/Models",
+                "{$path}/app/Models",
+            ];
+
+            foreach ($possiblePaths as $modelPath) {
+                if (File::exists($modelPath)) {
+                    foreach (File::files($modelPath) as $file) {
+                        $models[] = [
+                            'name' => $file->getBasename('.php'),
+                            'path' => $file->getRealPath(),
+                            'namespace' => "Modules\\{$moduleName}\\Models",
+                        ];
+                    }
                 }
             }
         }

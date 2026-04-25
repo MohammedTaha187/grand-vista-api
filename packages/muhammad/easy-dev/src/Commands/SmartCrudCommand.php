@@ -110,6 +110,13 @@ class SmartCrudCommand extends Command
             : app_path();
     }
 
+    protected function getCodePath(): string
+    {
+        return $this->module
+            ? base_path("Modules/{$this->module}/app")
+            : app_path();
+    }
+
     protected function getBaseNamespace(): string
     {
         return $this->module
@@ -138,7 +145,7 @@ class SmartCrudCommand extends Command
 
     protected function generateModel(): void
     {
-        $basePath = $this->getBasePath();
+        $basePath = $this->getCodePath();
         $path     = "{$basePath}/Models/{$this->model}.php";
         $stub     = File::get(__DIR__ . '/../../stubs/model.stub');
 
@@ -271,7 +278,7 @@ class SmartCrudCommand extends Command
         $subPath   = $this->getApiSubPath();
         $subNs     = $this->getApiSubNamespace();
         $namespace = $this->getBaseNamespace() . "\\Http\\Requests\\{$subNs}";
-        $path      = "{$basePath}/Http/Requests/{$subPath}/Store{$this->model}Request.php";
+        $path      = "{$this->getCodePath()}/Http/Requests/{$subPath}/Store{$this->model}Request.php";
         $table     = Str::snake(Str::pluralStudly($this->model));
 
         $rules = $this->resolveRules($table);
@@ -292,7 +299,7 @@ class SmartCrudCommand extends Command
         $subPath   = $this->getApiSubPath();
         $subNs     = $this->getApiSubNamespace();
         $namespace = $this->getBaseNamespace() . "\\Http\\Requests\\{$subNs}";
-        $path      = "{$basePath}/Http/Requests/{$subPath}/Update{$this->model}Request.php";
+        $path      = "{$this->getCodePath()}/Http/Requests/{$subPath}/Update{$this->model}Request.php";
         $table     = Str::snake(Str::pluralStudly($this->model));
 
         // Wrap rules with sometimes() for PATCH support
@@ -314,7 +321,7 @@ class SmartCrudCommand extends Command
         $subPath   = $this->getApiSubPath();
         $subNs     = $this->getApiSubNamespace();
         $namespace = $this->getBaseNamespace() . "\\Http\\Resources\\{$subNs}";
-        $path      = "{$basePath}/Http/Resources/{$subPath}/{$this->model}Resource.php";
+        $path      = "{$this->getCodePath()}/Http/Resources/{$subPath}/{$this->model}Resource.php";
 
         $table = Str::snake(Str::pluralStudly($this->model));
         $columns = $this->analyzer->getColumns($table);
@@ -348,7 +355,7 @@ class SmartCrudCommand extends Command
         $subPath   = $this->getApiSubPath();
         $subNs     = $this->getApiSubNamespace();
         $namespace = $this->getBaseNamespace() . "\\Http\\Resources\\{$subNs}";
-        $path      = "{$basePath}/Http/Resources/{$subPath}/{$this->model}Collection.php";
+        $path      = "{$this->getCodePath()}/Http/Resources/{$subPath}/{$this->model}Collection.php";
 
         $stub = File::get(__DIR__ . '/../../stubs/collection.stub');
         $this->createFile($path, $stub, [
@@ -364,7 +371,7 @@ class SmartCrudCommand extends Command
         $baseNs       = $this->getBaseNamespace();
         $subNs        = "{$baseNs}\\Http\\Controllers\\" . $this->getApiSubNamespace($type);
         $subPath      = "Api/V1/{$type}";
-        $path         = "{$basePath}/Http/Controllers/{$subPath}/{$this->model}Controller.php";
+        $path         = "{$this->getCodePath()}/Http/Controllers/{$subPath}/{$this->model}Controller.php";
         
         $stubFile     = $type === 'Client' ? 'controller.client.stub' : 'controller.api.stub';
         $stub         = File::get(__DIR__ . "/../../stubs/{$stubFile}");
@@ -411,8 +418,8 @@ class SmartCrudCommand extends Command
         $baseNs         = $this->getBaseNamespace();
         $serviceNs      = "{$baseNs}\\Services\\{$this->model}";
         $contractNs     = "{$serviceNs}\\Contracts";
-        $contractPath   = "{$basePath}/Services/{$this->model}/Contracts";
-        $servicePath    = "{$basePath}/Services/{$this->model}";
+        $contractPath   = "{$this->getCodePath()}/Services/{$this->model}/Contracts";
+        $servicePath    = "{$this->getCodePath()}/Services/{$this->model}";
         $modelNs        = "{$baseNs}\\Models\\{$this->model}";
         $dataNs         = "{$baseNs}\\DTOs\\{$this->model}\\{$this->model}Data";
         $repoContractNs = "{$baseNs}\\Repositories\\{$this->model}\\Contracts";
@@ -472,8 +479,8 @@ class SmartCrudCommand extends Command
         $baseNs       = $this->getBaseNamespace();
         $repoNs       = "{$baseNs}\\Repositories\\{$this->model}";
         $contractNs   = "{$repoNs}\\Contracts";
-        $contractPath = "{$basePath}/Repositories/{$this->model}/Contracts";
-        $repoPath     = "{$basePath}/Repositories/{$this->model}";
+        $contractPath = "{$this->getCodePath()}/Repositories/{$this->model}/Contracts";
+        $repoPath     = "{$this->getCodePath()}/Repositories/{$this->model}";
         $modelNs      = "{$baseNs}\\Models\\{$this->model}";
 
         // 1. Interface
@@ -501,7 +508,7 @@ class SmartCrudCommand extends Command
     {
         $basePath  = $this->getBasePath();
         $namespace = $this->getBaseNamespace() . "\\DTOs\\{$this->model}";
-        $path      = "{$basePath}/DTOs/{$this->model}/{$this->model}Data.php";
+        $path      = "{$this->getCodePath()}/DTOs/{$this->model}/{$this->model}Data.php";
         $table     = Str::snake(Str::pluralStudly($this->model));
 
         // Build typed readonly properties from DB schema
@@ -534,7 +541,7 @@ class SmartCrudCommand extends Command
     {
         $basePath  = $this->getBasePath();
         $namespace = $this->getBaseNamespace() . "\\Policies\\{$this->model}";
-        $path      = "{$basePath}/Policies/{$this->model}/{$this->model}Policy.php";
+        $path      = "{$this->getCodePath()}/Policies/{$this->model}/{$this->model}Policy.php";
 
         $stub = File::get(__DIR__ . '/../../stubs/policy.stub');
         $this->createFile($path, $stub, [

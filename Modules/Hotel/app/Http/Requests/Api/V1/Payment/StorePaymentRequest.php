@@ -1,0 +1,27 @@
+<?php
+
+namespace Modules\Hotel\Http\Requests\Api\V1\Payment;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class StorePaymentRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'booking_id' => 'required|uuid|exists:bookings,id',
+            'amount' => 'required|numeric|min:0',
+            'currency' => 'string|size:3',
+            'payment_method' => 'required|string',
+            'payment_gateway' => ['nullable', Rule::in(['stripe', 'paypal', 'manual'])],
+            'gateway_transaction_id' => 'nullable|string',
+            'status' => ['nullable', Rule::in(['pending', 'completed', 'failed', 'refunded', 'partially_refunded'])],
+        ];
+    }
+}

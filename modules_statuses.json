@@ -1,3 +1,7 @@
 {
-    "Catalog": true
+    "Catalog": true,
+    "Hotel": true,
+    "Cms": true,
+    "Operations": true,
+    "Setting": true
 }
