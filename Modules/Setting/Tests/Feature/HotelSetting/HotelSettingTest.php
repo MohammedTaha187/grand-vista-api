@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,7 +23,7 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
@@ -32,8 +32,8 @@ beforeEach(function () {
 });
 
 it('can list all hotelSettings', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/hotel-settings')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/settings/admin/hotel-settings')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all hotelSettings', function () {
 it('can create a hotelSetting', function () {
     $payload = HotelSetting::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/hotel-settings', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/settings/admin/hotel-settings', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a hotelSetting', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/hotel-settings/{$this->hotelSetting->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->hotelSetting->id);
@@ -60,15 +60,15 @@ it('can show a hotelSetting', function () {
 it('can update a hotelSetting', function () {
     $payload = HotelSetting::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/hotel-settings/{$this->hotelSetting->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a hotelSetting', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/hotel-settings/{$this->hotelSetting->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('hotel_settings', ['id' => $this->hotelSetting->id]);

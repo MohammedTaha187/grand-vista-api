@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,7 +23,7 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
@@ -32,8 +32,8 @@ beforeEach(function () {
 });
 
 it('can list all activityLogs', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/activity-logs')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/settings/admin/activity-logs')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all activityLogs', function () {
 it('can create a activityLog', function () {
     $payload = ActivityLog::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/activity-logs', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/settings/admin/activity-logs', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a activityLog', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/activity-logs/{$this->activityLog->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->activityLog->id);
@@ -60,15 +60,15 @@ it('can show a activityLog', function () {
 it('can update a activityLog', function () {
     $payload = ActivityLog::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/activity-logs/{$this->activityLog->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a activityLog', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/activity-logs/{$this->activityLog->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('activity_logs', ['id' => $this->activityLog->id]);

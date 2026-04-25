@@ -16,8 +16,7 @@ Route::prefix('v1/settings')->group(function () {
     // Admin Routes
     Route::middleware(['auth:api', 'role:admin'])->prefix('admin')->group(function () {
         Route::apiResource('hotel-settings', AdminSettingController::class);
-        Route::get('activity-logs', [AdminActivityController::class, 'index']);
-        Route::get('activity-logs/{id}', [AdminActivityController::class, 'show']);
+        Route::apiResource('activity-logs', AdminActivityController::class);
     });
 
     // Client/Public Routes
