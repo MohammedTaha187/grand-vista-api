@@ -27,7 +27,8 @@ beforeEach(function () {
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create();
+    $this->admin->assignRole($role);
     $this->hotelSetting = HotelSetting::factory()->create();
 });
 
