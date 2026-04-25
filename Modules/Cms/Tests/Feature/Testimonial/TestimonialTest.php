@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->testimonial = Testimonial::factory()->create();
 });
 
 it('can list all testimonials', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/testimonials')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/cms/admin/testimonials')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all testimonials', function () {
 it('can create a testimonial', function () {
     $payload = Testimonial::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/testimonials', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/cms/admin/testimonials', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a testimonial', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/testimonials/{$this->testimonial->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/cms/admin/testimonials/{$this->testimonial->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->testimonial->id);
@@ -60,15 +60,15 @@ it('can show a testimonial', function () {
 it('can update a testimonial', function () {
     $payload = Testimonial::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/testimonials/{$this->testimonial->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/cms/admin/testimonials/{$this->testimonial->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a testimonial', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/testimonials/{$this->testimonial->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/cms/admin/testimonials/{$this->testimonial->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('testimonials', ['id' => $this->testimonial->id]);

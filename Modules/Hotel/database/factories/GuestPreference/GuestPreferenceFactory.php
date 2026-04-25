@@ -19,7 +19,7 @@ class GuestPreferenceFactory extends Factory
             'preferred_floor' => $this->faker->numberBetween(1, 10),
             'preferred_bed_type' => $this->faker->randomElement(['single', 'double', 'king', 'queen', 'twin']),
             'dietary_requirements' => $this->faker->optional()->sentence(),
-            'allergies' => json_encode($this->faker->randomElements(['nuts', 'dairy', 'gluten', 'seafood', 'pollen'], $this->faker->numberBetween(0, 2))),
+            'allergies' => $this->faker->randomElements(['nuts', 'dairy', 'gluten', 'seafood', 'pollen'], $this->faker->numberBetween(0, 2)),
             'special_needs' => $this->faker->optional()->sentence(),
             'preferred_language' => 'en',
             'staff_notes' => $this->faker->optional()->sentence(),

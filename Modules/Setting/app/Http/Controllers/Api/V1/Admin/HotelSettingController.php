@@ -66,7 +66,7 @@ class HotelSettingController extends Controller
      */
     public function update(UpdateHotelSettingRequest $request, HotelSetting $hotelSetting): JsonResponse
     {
-        $this->service->update($hotelSetting->id, HotelSettingData::from($request->validated()));
+        $this->service->update($hotelSetting->getKey(), HotelSettingData::from($request->validated()));
 
         return $this->successResponse(
             new HotelSettingResource($hotelSetting->fresh()),
@@ -79,7 +79,7 @@ class HotelSettingController extends Controller
      */
     public function destroy(HotelSetting $hotelSetting): JsonResponse
     {
-        $this->service->delete($hotelSetting->id);
+        $this->service->delete($hotelSetting->getKey());
 
         return $this->successResponse(null, 'HotelSetting deleted successfully.', 204);
     }

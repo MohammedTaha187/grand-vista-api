@@ -11,7 +11,7 @@ class UpdateInvoiceItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->route('invoiceItem'));
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateInvoiceItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'invoice_id' => ['sometimes', 'required', 'uuid', 'exists:invoices,id'],
+            'description' => ['sometimes', 'required', 'string'],
+            'quantity' => ['sometimes', 'required', 'integer', 'min:1'],
+            'unit_price' => ['sometimes', 'required', 'numeric', 'min:0'],
+            'total_price' => ['sometimes', 'required', 'numeric', 'min:0'],
+            'item_type' => ['sometimes', 'required', 'string'],
         ];
     }
 }

@@ -19,6 +19,11 @@ class HousekeepingTask extends Model
     /** @use HasFactory<HousekeepingTaskFactory> */
     use HasFactory, HasUuids;
 
+    protected $casts = [
+        'scheduled_at' => 'datetime',
+        'completed_at' => 'datetime',
+    ];
+
     
     
 

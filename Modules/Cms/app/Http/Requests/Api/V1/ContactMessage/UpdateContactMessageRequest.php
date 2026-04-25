@@ -15,8 +15,12 @@ class UpdateContactMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'subject' => 'sometimes|required|string|max:255',
+            'message' => 'sometimes|required|string',
             'status' => ['sometimes', 'required', Rule::in(['new', 'read', 'replied', 'archived'])],
-            'message' => 'sometimes|required|string', // Although usually contact messages aren't edited by user
         ];
     }
 }

@@ -66,7 +66,7 @@ class ActivityLogController extends Controller
      */
     public function update(UpdateActivityLogRequest $request, ActivityLog $activityLog): JsonResponse
     {
-        $this->service->update($activityLog->id, ActivityLogData::from($request->validated()));
+        $this->service->update($activityLog->getKey(), ActivityLogData::from($request->validated()));
 
         return $this->successResponse(
             new ActivityLogResource($activityLog->fresh()),
@@ -79,7 +79,7 @@ class ActivityLogController extends Controller
      */
     public function destroy(ActivityLog $activityLog): JsonResponse
     {
-        $this->service->delete($activityLog->id);
+        $this->service->delete($activityLog->getKey());
 
         return $this->successResponse(null, 'ActivityLog deleted successfully.', 204);
     }

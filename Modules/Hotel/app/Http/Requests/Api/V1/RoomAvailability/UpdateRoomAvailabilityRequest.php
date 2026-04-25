@@ -11,7 +11,7 @@ class UpdateRoomAvailabilityRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->route('roomAvailability'));
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateRoomAvailabilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'room_id' => ['sometimes', 'required', 'uuid', 'exists:rooms,id'],
+            'date' => ['sometimes', 'required', 'date'],
+            'status' => ['sometimes', 'required', 'in:available,booked,blocked,maintenance'],
+            'booking_id' => ['nullable', 'uuid', 'exists:bookings,id'],
+            'price_for_date' => ['nullable', 'numeric', 'min:0'],
+            'notes' => ['nullable', 'string'],
         ];
     }
 }

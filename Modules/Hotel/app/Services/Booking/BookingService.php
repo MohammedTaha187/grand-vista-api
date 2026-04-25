@@ -53,6 +53,7 @@ class BookingService implements BookingServiceInterface
                 throw new \Exception('Room not available for selected dates.');
             }
 
+            $room = Room::with('roomType')->findOrFail($data->room_id);
             $breakdown = $this->calculateBreakdown($data->room_id, $data->check_in_date, $data->check_out_date);
 
             $booking = $this->repo->create([
@@ -76,6 +77,7 @@ class BookingService implements BookingServiceInterface
 
             $booking->bookingRooms()->create([
                 'room_id' => $data->room_id,
+                'room_type_id' => $room->room_type_id,
                 'price_per_night' => $breakdown['base_price_per_night'],
                 'nights' => $breakdown['nights'],
                 'subtotal' => $breakdown['subtotal'],

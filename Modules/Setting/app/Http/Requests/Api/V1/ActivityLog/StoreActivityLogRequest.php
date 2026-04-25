@@ -3,6 +3,7 @@
 namespace Modules\Setting\Http\Requests\Api\V1\ActivityLog;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreActivityLogRequest extends FormRequest
 {
@@ -22,7 +23,14 @@ class StoreActivityLogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => 'nullable|uuid|exists:users,id',
+            'booking_id' => 'nullable|uuid|exists:bookings,id',
+            'action' => ['required', Rule::in(['created', 'updated', 'deleted', 'checked_in', 'checked_out', 'cancelled', 'paid', 'refunded', 'viewed'])],
+            'entity_type' => 'required|string|max:255',
+            'entity_id' => 'required|uuid',
+            'description' => 'required|string',
+            'ip_address' => 'nullable|string|max:255',
+            'user_agent' => 'nullable|string',
         ];
     }
 }

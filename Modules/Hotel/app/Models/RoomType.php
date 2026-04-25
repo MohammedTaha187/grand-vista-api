@@ -17,7 +17,8 @@ class RoomType extends Model
     use HasFactory, HasUuids;
 
     protected $casts = [
-        'gallery' => 'array',
+        'images' => 'array',
+        'amenities' => 'array',
         'meta_keywords' => 'array',
     ];
 

@@ -15,6 +15,11 @@ class RoomAvailability extends Model
     /** @use HasFactory<RoomAvailabilityFactory> */
     use HasFactory, HasUuids;
 
+    protected $casts = [
+        'date' => 'date',
+        'price_for_date' => 'float',
+    ];
+
     /**
      * The table associated with the model.
      *

@@ -30,11 +30,14 @@ beforeEach(function () {
     $this->admin = User::factory()->create();
     $this->admin->assignRole($role);
     $this->hotelSetting = HotelSetting::factory()->create();
-    $this->withoutMiddleware();
+    $this->withoutMiddleware([
+        \Illuminate\Auth\Middleware\Authenticate::class,
+        \Spatie\Permission\Middleware\RoleMiddleware::class,
+    ]);
 });
 
 it('can list all hotelSettings', function () {
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->getJson('/api/v1/settings/admin/hotel-settings')
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -44,7 +47,7 @@ it('can list all hotelSettings', function () {
 it('can create a hotelSetting', function () {
     $payload = HotelSetting::factory()->make()->toArray();
 
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->postJson('/api/v1/settings/admin/hotel-settings', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
@@ -52,7 +55,7 @@ it('can create a hotelSetting', function () {
 });
 
 it('can show a hotelSetting', function () {
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->getJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -62,14 +65,14 @@ it('can show a hotelSetting', function () {
 it('can update a hotelSetting', function () {
     $payload = HotelSetting::factory()->make()->toArray();
 
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->putJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a hotelSetting', function () {
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->deleteJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}")
         ->assertNoContent();
 

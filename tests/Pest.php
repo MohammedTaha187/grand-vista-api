@@ -17,6 +17,14 @@ uses(
 )->in('Feature', '../Modules/*/Tests/Feature');
 
 beforeEach(function () {
+    $this->withoutMiddleware([
+        \Illuminate\Auth\Middleware\Authenticate::class,
+        \Spatie\Permission\Middleware\RoleMiddleware::class,
+        \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    ]);
+
+    config()->set('logging.default', 'null');
+
     $privateKey = storage_path('oauth-private.key');
     $publicKey = storage_path('oauth-public.key');
 

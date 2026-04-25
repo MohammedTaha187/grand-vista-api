@@ -14,8 +14,12 @@ Route::prefix('v1/operations')->group(function () {
 
     // Admin/Staff Routes
     Route::middleware(['auth:api', 'role:admin|staff'])->prefix('admin')->group(function () {
-        Route::apiResource('housekeeping', AdminHousekeepingController::class);
-        Route::apiResource('maintenance', AdminMaintenanceController::class);
+        Route::apiResource('housekeeping', AdminHousekeepingController::class)->parameters([
+            'housekeeping' => 'housekeepingTask',
+        ]);
+        Route::apiResource('maintenance', AdminMaintenanceController::class)->parameters([
+            'maintenance' => 'maintenanceLog',
+        ]);
     });
 
 });

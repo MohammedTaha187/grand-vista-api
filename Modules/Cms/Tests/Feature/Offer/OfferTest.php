@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->offer = Offer::factory()->create();
 });
 
 it('can list all offers', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/offers')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/cms/admin/offers')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all offers', function () {
 it('can create a offer', function () {
     $payload = Offer::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/offers', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/cms/admin/offers', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a offer', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/offers/{$this->offer->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/cms/admin/offers/{$this->offer->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->offer->id);
@@ -60,15 +60,15 @@ it('can show a offer', function () {
 it('can update a offer', function () {
     $payload = Offer::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/offers/{$this->offer->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/cms/admin/offers/{$this->offer->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a offer', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/offers/{$this->offer->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/cms/admin/offers/{$this->offer->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('offers', ['id' => $this->offer->id]);

@@ -22,7 +22,12 @@ class StoreInvoiceItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'invoice_id' => ['required', 'uuid', 'exists:invoices,id'],
+            'description' => ['required', 'string'],
+            'quantity' => ['required', 'integer', 'min:1'],
+            'unit_price' => ['required', 'numeric', 'min:0'],
+            'total_price' => ['required', 'numeric', 'min:0'],
+            'item_type' => ['required', 'string'],
         ];
     }
 }

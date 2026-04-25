@@ -22,7 +22,12 @@ class StoreRoomAvailabilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'room_id' => ['required', 'uuid', 'exists:rooms,id'],
+            'date' => ['required', 'date'],
+            'status' => ['required', 'in:available,booked,blocked,maintenance'],
+            'booking_id' => ['nullable', 'uuid', 'exists:bookings,id'],
+            'price_for_date' => ['nullable', 'numeric', 'min:0'],
+            'notes' => ['nullable', 'string'],
         ];
     }
 }

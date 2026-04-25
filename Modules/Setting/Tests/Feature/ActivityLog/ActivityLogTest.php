@@ -30,11 +30,14 @@ beforeEach(function () {
     $this->admin = User::factory()->create();
     $this->admin->assignRole($role);
     $this->activityLog = ActivityLog::factory()->create();
-    $this->withoutMiddleware();
+    $this->withoutMiddleware([
+        \Illuminate\Auth\Middleware\Authenticate::class,
+        \Spatie\Permission\Middleware\RoleMiddleware::class,
+    ]);
 });
 
 it('can list all activityLogs', function () {
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->getJson('/api/v1/settings/admin/activity-logs')
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -44,7 +47,7 @@ it('can list all activityLogs', function () {
 it('can create a activityLog', function () {
     $payload = ActivityLog::factory()->make()->toArray();
 
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->postJson('/api/v1/settings/admin/activity-logs', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
@@ -52,7 +55,7 @@ it('can create a activityLog', function () {
 });
 
 it('can show a activityLog', function () {
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->getJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -62,14 +65,14 @@ it('can show a activityLog', function () {
 it('can update a activityLog', function () {
     $payload = ActivityLog::factory()->make()->toArray();
 
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->putJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a activityLog', function () {
-    actingAs($this->admin)
+    actingAs($this->admin, 'api')
         ->deleteJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}")
         ->assertNoContent();
 

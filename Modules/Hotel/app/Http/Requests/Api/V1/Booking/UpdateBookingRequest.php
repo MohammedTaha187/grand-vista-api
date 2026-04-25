@@ -15,6 +15,7 @@ class UpdateBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'room_id' => 'sometimes|required|uuid|exists:rooms,id',
             'status' => ['sometimes', 'required', Rule::in(['pending', 'confirmed', 'checked_in', 'checked_out', 'cancelled', 'no_show'])],
             'check_in_date' => 'sometimes|required|date',
             'check_out_date' => 'sometimes|required|date|after:check_in_date',

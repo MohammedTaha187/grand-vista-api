@@ -15,6 +15,13 @@ class BlogPost extends Model
     /** @use HasFactory<BlogPostFactory> */
     use HasFactory, HasUuids;
 
+    protected $casts = [
+        'tags' => 'array',
+        'is_published' => 'boolean',
+        'published_at' => 'datetime',
+        'views_count' => 'integer',
+    ];
+
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class, 'author_id', 'id');
