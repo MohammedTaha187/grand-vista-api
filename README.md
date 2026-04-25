@@ -72,14 +72,24 @@ Once the containers are running, access the documentation at:
 
 - **Stop containers**: `docker-compose down`
 - **View logs**: `docker-compose logs -f app`
-- **Run Tests**: `docker-compose exec app php artisan test`
+- **Run Tests**: 
+  ```bash
+  docker-compose exec app php artisan test
+  ```
+- **Fix Permissions** (if tests fail with permission error):
+  ```bash
+  docker-compose exec app chown -R sail:sail /var/www/html
+  ```
 
 ## 🧪 Testing
 
-Run feature and contract tests:
+The API uses **Pest** for testing. To run tests correctly, you MUST run them inside the Docker container so they can reach the MySQL service:
+
 ```bash
-php artisan test
+docker-compose exec app php artisan test
 ```
+
+*Note: If it's your first time running tests, ensure MySQL has finished initializing the testing database.*
 
 ## 🤝 Contributing
 
