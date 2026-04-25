@@ -25,7 +25,9 @@ A robust, enterprise-grade Hotel Management API built with Laravel, featuring a 
 - **Authentication**: Laravel Passport & Socialite
 - **API Docs**: L5-Swagger (OpenAPI 3.0)
 
-## 📦 Installation
+## 🐳 Docker Setup (Recommended)
+
+This project is fully dockerized using Laravel Sail/Docker Compose.
 
 1. **Clone the repository**:
    ```bash
@@ -33,28 +35,44 @@ A robust, enterprise-grade Hotel Management API built with Laravel, featuring a 
    cd grand-vista-api
    ```
 
-2. **Install dependencies**:
-   ```bash
-   composer install
-   npm install
-   ```
-
-3. **Environment Setup**:
+2. **Environment Setup**:
    ```bash
    cp .env.example .env
-   php artisan key:generate
+   ```
+   *Make sure `DB_HOST` is set to `mysql` inside your `.env` for Docker.*
+
+3. **Start the containers**:
+   ```bash
+   # Using Docker Compose
+   docker-compose up -d
    ```
 
-4. **Database & Migration**:
+4. **Initialize the Application**:
+   Execute these commands inside the app container:
    ```bash
-   php artisan migrate --seed
-   php artisan passport:install
+   # Install dependencies
+   docker-compose exec app composer install
+   
+   # Generate Key
+   docker-compose exec app php artisan key:generate
+   
+   # Run Migrations & Seed
+   docker-compose exec app php artisan migrate --seed
+   
+   # Install Passport Keys
+   docker-compose exec app php artisan passport:install
    ```
 
 ## 📖 API Documentation
 
-Access the interactive Swagger documentation at:
-`http://your-domain.com/api/documentation`
+Once the containers are running, access the documentation at:
+`http://localhost:8080/api/documentation`
+
+## 🛠 Useful Commands
+
+- **Stop containers**: `docker-compose down`
+- **View logs**: `docker-compose logs -f app`
+- **Run Tests**: `docker-compose exec app php artisan test`
 
 ## 🧪 Testing
 
