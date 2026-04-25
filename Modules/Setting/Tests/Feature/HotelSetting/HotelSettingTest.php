@@ -2,8 +2,7 @@
 
 use Modules\Setting\Models\HotelSetting;
 use App\Models\User;
-use Laravel\Passport\Passport;
-use function Pest\Laravel\{getJson, postJson, putJson, patchJson, deleteJson};
+use function Pest\Laravel\{getJson, postJson, putJson, patchJson, deleteJson, actingAs};
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -31,10 +30,11 @@ beforeEach(function () {
     $this->admin = User::factory()->create();
     $this->admin->assignRole($role);
     $this->hotelSetting = HotelSetting::factory()->create();
+    $this->withoutMiddleware();
 });
 
 it('can list all hotelSettings', function () {
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->getJson('/api/v1/settings/admin/hotel-settings')
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -44,7 +44,7 @@ it('can list all hotelSettings', function () {
 it('can create a hotelSetting', function () {
     $payload = HotelSetting::factory()->make()->toArray();
 
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->postJson('/api/v1/settings/admin/hotel-settings', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
@@ -52,7 +52,7 @@ it('can create a hotelSetting', function () {
 });
 
 it('can show a hotelSetting', function () {
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->getJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -62,14 +62,14 @@ it('can show a hotelSetting', function () {
 it('can update a hotelSetting', function () {
     $payload = HotelSetting::factory()->make()->toArray();
 
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->putJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a hotelSetting', function () {
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->deleteJson("/api/v1/settings/admin/hotel-settings/{$this->hotelSetting->id}")
         ->assertNoContent();
 

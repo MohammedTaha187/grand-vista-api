@@ -2,8 +2,7 @@
 
 use Modules\Setting\Models\ActivityLog;
 use App\Models\User;
-use Laravel\Passport\Passport;
-use function Pest\Laravel\{getJson, postJson, putJson, patchJson, deleteJson};
+use function Pest\Laravel\{getJson, postJson, putJson, patchJson, deleteJson, actingAs};
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -31,10 +30,11 @@ beforeEach(function () {
     $this->admin = User::factory()->create();
     $this->admin->assignRole($role);
     $this->activityLog = ActivityLog::factory()->create();
+    $this->withoutMiddleware();
 });
 
 it('can list all activityLogs', function () {
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->getJson('/api/v1/settings/admin/activity-logs')
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -44,7 +44,7 @@ it('can list all activityLogs', function () {
 it('can create a activityLog', function () {
     $payload = ActivityLog::factory()->make()->toArray();
 
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->postJson('/api/v1/settings/admin/activity-logs', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
@@ -52,7 +52,7 @@ it('can create a activityLog', function () {
 });
 
 it('can show a activityLog', function () {
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->getJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
@@ -62,14 +62,14 @@ it('can show a activityLog', function () {
 it('can update a activityLog', function () {
     $payload = ActivityLog::factory()->make()->toArray();
 
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->putJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a activityLog', function () {
-    Passport::actingAs($this->admin)
+    actingAs($this->admin)
         ->deleteJson("/api/v1/settings/admin/activity-logs/{$this->activityLog->id}")
         ->assertNoContent();
 
