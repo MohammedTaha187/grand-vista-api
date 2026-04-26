@@ -89,6 +89,7 @@
             "@php artisan config:clear --ansi",
             "docker compose up -d --wait --wait-timeout 120 mysql redis mailpit laravel.test",
             "sh scripts/wait-for-mysql.sh",
+            "./vendor/bin/sail artisan passport:keys --force",
             "./vendor/bin/sail artisan test"
         ],
         "post-autoload-dump": [
