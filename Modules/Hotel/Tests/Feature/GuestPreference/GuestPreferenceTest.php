@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->guestPreference = GuestPreference::factory()->create();
 });
 
 it('can list all guestPreferences', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/guest-preferences')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/hotel/admin/guest-preferences')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all guestPreferences', function () {
 it('can create a guestPreference', function () {
     $payload = GuestPreference::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/guest-preferences', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/hotel/admin/guest-preferences', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a guestPreference', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/guest-preferences/{$this->guestPreference->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/hotel/admin/guest-preferences/{$this->guestPreference->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->guestPreference->id);
@@ -60,15 +60,15 @@ it('can show a guestPreference', function () {
 it('can update a guestPreference', function () {
     $payload = GuestPreference::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/guest-preferences/{$this->guestPreference->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/hotel/admin/guest-preferences/{$this->guestPreference->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a guestPreference', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/guest-preferences/{$this->guestPreference->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/hotel/admin/guest-preferences/{$this->guestPreference->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('guest_preferences', ['id' => $this->guestPreference->id]);

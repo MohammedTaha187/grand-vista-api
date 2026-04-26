@@ -22,7 +22,8 @@ class UpdateFavoriteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => ['sometimes', 'required', 'uuid', 'exists:users,id'],
+            'room_type_id' => ['sometimes', 'required', 'uuid', 'exists:room_types,id'],
         ];
     }
 }

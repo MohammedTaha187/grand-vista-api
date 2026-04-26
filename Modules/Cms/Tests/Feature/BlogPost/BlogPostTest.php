@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->blogPost = BlogPost::factory()->create();
 });
 
 it('can list all blogPosts', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/blog-posts')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/cms/admin/blog-posts')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all blogPosts', function () {
 it('can create a blogPost', function () {
     $payload = BlogPost::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/blog-posts', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/cms/admin/blog-posts', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a blogPost', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/blog-posts/{$this->blogPost->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/cms/admin/blog-posts/{$this->blogPost->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->blogPost->id);
@@ -60,15 +60,15 @@ it('can show a blogPost', function () {
 it('can update a blogPost', function () {
     $payload = BlogPost::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/blog-posts/{$this->blogPost->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/cms/admin/blog-posts/{$this->blogPost->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a blogPost', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/blog-posts/{$this->blogPost->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/cms/admin/blog-posts/{$this->blogPost->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('blog_posts', ['id' => $this->blogPost->id]);

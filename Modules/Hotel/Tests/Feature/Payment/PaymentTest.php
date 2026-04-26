@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->payment = Payment::factory()->create();
 });
 
 it('can list all payments', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/payments')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/hotel/admin/payments')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all payments', function () {
 it('can create a payment', function () {
     $payload = Payment::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/payments', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/hotel/admin/payments', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a payment', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/payments/{$this->payment->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/hotel/admin/payments/{$this->payment->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->payment->id);
@@ -60,15 +60,15 @@ it('can show a payment', function () {
 it('can update a payment', function () {
     $payload = Payment::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/payments/{$this->payment->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/hotel/admin/payments/{$this->payment->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a payment', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/payments/{$this->payment->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/hotel/admin/payments/{$this->payment->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('payments', ['id' => $this->payment->id]);

@@ -19,8 +19,13 @@ class Offer extends Model
     /** @use HasFactory<OfferFactory> */
     use HasFactory, HasUuids;
 
-    
-    
+    protected $casts = [
+        'applicable_room_types' => 'array',
+        'is_active' => 'boolean',
+        'discount_value' => 'float',
+        'min_nights' => 'integer',
+        'max_nights' => 'integer',
+    ];
 
     
     

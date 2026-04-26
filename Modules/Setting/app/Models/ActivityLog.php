@@ -19,6 +19,10 @@ class ActivityLog extends Model
 {
     /** @use HasFactory<ActivityLogFactory> */
     use HasFactory, HasUuids;
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
     
     const UPDATED_AT = null;
 

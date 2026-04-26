@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->invoiceItem = InvoiceItem::factory()->create();
 });
 
 it('can list all invoiceItems', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/invoice-items')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/hotel/admin/invoice-items')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all invoiceItems', function () {
 it('can create a invoiceItem', function () {
     $payload = InvoiceItem::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/invoice-items', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/hotel/admin/invoice-items', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a invoiceItem', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/invoice-items/{$this->invoiceItem->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/hotel/admin/invoice-items/{$this->invoiceItem->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->invoiceItem->id);
@@ -60,15 +60,15 @@ it('can show a invoiceItem', function () {
 it('can update a invoiceItem', function () {
     $payload = InvoiceItem::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/invoice-items/{$this->invoiceItem->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/hotel/admin/invoice-items/{$this->invoiceItem->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a invoiceItem', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/invoice-items/{$this->invoiceItem->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/hotel/admin/invoice-items/{$this->invoiceItem->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('invoice_items', ['id' => $this->invoiceItem->id]);

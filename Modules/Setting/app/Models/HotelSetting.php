@@ -19,9 +19,7 @@ class HotelSetting extends Model
     /** @use HasFactory<HotelSettingFactory> */
     use HasFactory, HasUuids;
 
-    
-    
+    public $incrementing = false;
 
-    
-    
+    protected $keyType = 'string';
 }

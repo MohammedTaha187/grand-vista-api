@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->bookingRoom = BookingRoom::factory()->create();
 });
 
 it('can list all bookingRooms', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/booking-rooms')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/hotel/admin/booking-rooms')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all bookingRooms', function () {
 it('can create a bookingRoom', function () {
     $payload = BookingRoom::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/booking-rooms', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/hotel/admin/booking-rooms', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a bookingRoom', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/booking-rooms/{$this->bookingRoom->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/hotel/admin/booking-rooms/{$this->bookingRoom->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->bookingRoom->id);
@@ -60,15 +60,15 @@ it('can show a bookingRoom', function () {
 it('can update a bookingRoom', function () {
     $payload = BookingRoom::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/booking-rooms/{$this->bookingRoom->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/hotel/admin/booking-rooms/{$this->bookingRoom->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a bookingRoom', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/booking-rooms/{$this->bookingRoom->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/hotel/admin/booking-rooms/{$this->bookingRoom->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('booking_rooms', ['id' => $this->bookingRoom->id]);

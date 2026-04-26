@@ -19,7 +19,7 @@ class HousekeepingTaskFactory extends Factory
             'task_type' => $this->faker->randomElement(['cleaning', 'maintenance', 'inspection', 'turndown', 'deep_clean', 'linen_change']),
             'priority' => $this->faker->randomElement(['low', 'medium', 'high', 'urgent']),
             'status' => $this->faker->randomElement(['pending', 'in_progress', 'completed', 'cancelled']),
-            'scheduled_at' => now()->addHours($this->faker->numberBetween(1, 48)),
+            'scheduled_at' => now()->addHours($this->faker->numberBetween(1, 48))->format('Y-m-d H:i:s'),
             'notes' => $this->faker->sentence(),
         ];
     }

@@ -16,6 +16,7 @@ class StorePaymentRequest extends FormRequest
     {
         return [
             'booking_id' => 'required|uuid|exists:bookings,id',
+            'user_id' => 'required|uuid|exists:users,id',
             'amount' => 'required|numeric|min:0',
             'currency' => 'string|size:3',
             'payment_method' => 'required|string',

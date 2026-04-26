@@ -19,6 +19,10 @@ class GuestPreference extends Model
     /** @use HasFactory<GuestPreferenceFactory> */
     use HasFactory, HasUuids;
 
+    protected $casts = [
+        'allergies' => 'array',
+    ];
+
     
     
 

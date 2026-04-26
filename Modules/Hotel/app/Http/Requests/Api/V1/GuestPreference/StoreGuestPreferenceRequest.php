@@ -22,7 +22,14 @@ class StoreGuestPreferenceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => ['required', 'uuid', 'exists:users,id'],
+            'preferred_room_type_id' => ['nullable', 'uuid', 'exists:room_types,id'],
+            'preferred_floor' => ['nullable', 'integer'],
+            'preferred_bed_type' => ['nullable', 'string'],
+            'dietary_requirements' => ['nullable', 'string'],
+            'allergies' => ['nullable', 'array'],
+            'special_needs' => ['nullable', 'string'],
+            'preferred_language' => ['nullable', 'string', 'size:2'],
         ];
     }
 }

@@ -13,7 +13,7 @@ class BookingFactory extends Factory
 
     public function definition(): array
     {
-        $checkIn = now()->addDays($this->faker->numberBetween(-30, 30));
+        $checkIn = now()->addDay();
         $nights = $this->faker->numberBetween(1, 7);
         $checkOut = (clone $checkIn)->addDays($nights);
         $total = $this->faker->randomFloat(2, 100, 2000);

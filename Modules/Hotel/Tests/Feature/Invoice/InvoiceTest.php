@@ -12,7 +12,7 @@ beforeEach(function () {
     // Strip trailing 's' if any (Route is plural)
     $singleKey = \Illuminate\Support\Str::singular($modelKebab);
 
-    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+    $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'api']);
     
     $permissions = [
         "view-any-{$singleKey}",
@@ -23,17 +23,17 @@ beforeEach(function () {
     ];
 
     foreach ($permissions as $p) {
-        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => $p, 'guard_name' => 'api']);
         $role->givePermissionTo($p);
     }
 
-    $this->admin = User::factory()->create()->assignRole('admin');
+    $this->admin = User::factory()->create()->assignRole($role);
     $this->invoice = Invoice::factory()->create();
 });
 
 it('can list all invoices', function () {
-    actingAs($this->admin)
-        ->getJson('/api/v1/invoices')
+    actingAs($this->admin, 'api')
+        ->getJson('/api/v1/hotel/admin/invoices')
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data', 'message']);
@@ -42,16 +42,16 @@ it('can list all invoices', function () {
 it('can create a invoice', function () {
     $payload = Invoice::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->postJson('/api/v1/invoices', $payload)
+    actingAs($this->admin, 'api')
+        ->postJson('/api/v1/hotel/admin/invoices', $payload)
         ->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => ['id']]);
 });
 
 it('can show a invoice', function () {
-    actingAs($this->admin)
-        ->getJson("/api/v1/invoices/{$this->invoice->id}")
+    actingAs($this->admin, 'api')
+        ->getJson("/api/v1/hotel/admin/invoices/{$this->invoice->id}")
         ->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonPath('data.id', $this->invoice->id);
@@ -60,15 +60,15 @@ it('can show a invoice', function () {
 it('can update a invoice', function () {
     $payload = Invoice::factory()->make()->toArray();
 
-    actingAs($this->admin)
-        ->putJson("/api/v1/invoices/{$this->invoice->id}", $payload)
+    actingAs($this->admin, 'api')
+        ->putJson("/api/v1/hotel/admin/invoices/{$this->invoice->id}", $payload)
         ->assertOk()
         ->assertJsonPath('success', true);
 });
 
 it('can delete a invoice', function () {
-    actingAs($this->admin)
-        ->deleteJson("/api/v1/invoices/{$this->invoice->id}")
+    actingAs($this->admin, 'api')
+        ->deleteJson("/api/v1/hotel/admin/invoices/{$this->invoice->id}")
         ->assertNoContent();
 
     $this->assertDatabaseMissing('invoices', ['id' => $this->invoice->id]);

@@ -14,7 +14,7 @@ class RoomFactory extends Factory
     {
         return [
             'room_type_id' => RoomType::inRandomOrder()->first()?->id ?? RoomType::factory(),
-            'room_number' => $this->faker->unique()->numberBetween(100, 999),
+            'room_number' => (string) $this->faker->unique()->numberBetween(100, 999),
             'floor' => $this->faker->numberBetween(1, 10),
             'status' => $this->faker->randomElement(['available', 'occupied', 'maintenance', 'reserved', 'cleaning', 'out_of_order']),
             'price_override' => null,

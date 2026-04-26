@@ -19,6 +19,7 @@ class StoreHousekeepingTaskRequest extends FormRequest
             'assigned_to' => 'nullable|uuid|exists:users,id',
             'task_type' => ['required', Rule::in(['cleaning', 'maintenance', 'inspection', 'turndown', 'deep_clean', 'linen_change'])],
             'priority' => ['nullable', Rule::in(['low', 'medium', 'high', 'urgent'])],
+            'status' => ['sometimes', 'required', Rule::in(['pending', 'in_progress', 'completed', 'cancelled'])],
             'scheduled_at' => 'required|date|after_or_equal:now',
             'notes' => 'nullable|string',
         ];

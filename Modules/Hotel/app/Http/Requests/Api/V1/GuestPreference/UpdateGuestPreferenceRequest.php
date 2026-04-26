@@ -14,6 +14,7 @@ class UpdateGuestPreferenceRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => 'sometimes|required|uuid|exists:users,id',
             'preferred_room_type_id' => 'nullable|uuid|exists:room_types,id',
             'preferred_floor' => 'nullable|integer',
             'preferred_bed_type' => 'nullable|string',

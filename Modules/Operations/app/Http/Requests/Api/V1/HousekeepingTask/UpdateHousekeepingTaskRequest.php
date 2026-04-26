@@ -15,9 +15,11 @@ class UpdateHousekeepingTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'room_id' => 'sometimes|required|uuid|exists:rooms,id',
             'assigned_to' => 'nullable|uuid|exists:users,id',
+            'task_type' => ['sometimes', 'required', Rule::in(['cleaning', 'maintenance', 'inspection', 'turndown', 'deep_clean', 'linen_change'])],
+            'priority' => ['nullable', Rule::in(['low', 'medium', 'high', 'urgent'])],
             'status' => ['sometimes', 'required', Rule::in(['pending', 'in_progress', 'completed', 'cancelled'])],
-            'priority' => ['sometimes', 'required', Rule::in(['low', 'medium', 'high', 'urgent'])],
             'scheduled_at' => 'sometimes|required|date',
             'completed_at' => 'nullable|date',
             'notes' => 'nullable|string',
